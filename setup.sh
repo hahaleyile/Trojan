@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # 安装需要的文件：config.yaml, trojan-go.service, 400.html nginx.conf
 # 安装依赖库
@@ -84,17 +84,17 @@ read -r server_name
 echo "请输入本服务器 IP："
 read -r server_ip
 if [ -f ./nginx.conf ]; then
-  rm /etc/nginx/sites-available/default
-  rm /etc/nginx/sites-enabled/default
+  rm -f /etc/nginx/sites-available/default
+  rm -f /etc/nginx/sites-enabled/default
   sed -e "s/<<server_name>>/$server_name/g" \
     -e "s/<<ip>>/$server_ip/g" \
     ./nginx.conf >/etc/nginx/sites-available/default
   ln /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
-  rm ./nginx.conf
+  rm -f ./nginx.conf
 fi
 mkdir -p /var/www/html/
 chown trojan:trojan 400.html
-mv ./400.html /var/www/html/400.html
+mv -f ./400.html /var/www/html/400.html
 systemctl restart nginx
 echo "nginx 已经配置完成"
 
@@ -131,11 +131,11 @@ if [ "$trojan_version" = "null" ]; then
 fi
 wget -c -O trojan-go.zip "https://github.com/p4gefau1t/trojan-go/releases/download/$trojan_version/trojan-go-linux-amd64.zip"
 unzip -o trojan-go.zip trojan-go
-rm trojan-go.zip
+rm -f trojan-go.zip
 mkdir -p /usr/local/etc/trojan-go
-mv trojan-go /usr/local/bin/trojan-go
-mv config.yaml /usr/local/etc/trojan-go/config.yaml
-mv trojan-go.service /etc/systemd/system/trojan-go.service
+mv -f trojan-go /usr/local/bin/trojan-go
+mv -f config.yaml /usr/local/etc/trojan-go/config.yaml
+mv -f trojan-go.service /etc/systemd/system/trojan-go.service
 chown trojan:trojan /usr/local/bin/trojan-go
 chmod 500 /usr/local/bin/trojan-go
 chown root:root /etc/systemd/system/trojan-go.service
