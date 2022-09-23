@@ -174,4 +174,4 @@ fi
 echo "安装已经完成，你可以添加 Docker 容器来作为域名主页了"
 
 # 生成 Trojan 分享链接（二维码形式）
-qrencode -o - -t ANSI "trojan://$(trojan_password)@$(server_name):443?sni=$(server_name)&allowinsecure=0"
+qrencode -o - -t ANSI "trojan://$trojan_password@$server_name:443?sni=$server_name&allowinsecure=0"
