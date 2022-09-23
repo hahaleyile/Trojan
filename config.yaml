@@ -1,0 +1,37 @@
+run-type: server
+local-addr: 0.0.0.0
+local-port: 443
+remote-addr: 127.0.0.1
+remote-port: 80
+disable-http_check: false
+udp-timeout: 60
+log-level: 1
+password:
+  - '<<password>>'
+ssl:
+  verify: true
+  verify-hostname: true
+  cert: '/etc/letsencrypt/live/certificate.crt'
+  key: '/etc/letsencrypt/live/private.key'
+  sni: '<<server_name>>'
+  fallback-addr: 127.0.0.1
+  fallback-port: 10087
+shadowsocks:
+  enabled: false
+  method: 'AES-256-GCM'
+  password: 'vuoO5V_hYwpZ6oQx'
+tcp:
+  no-delay: true
+  keep-alive: true
+  prefer-ipv4: true
+mysql:
+  enabled: false
+  server-addr: 127.0.0.1
+  server-port: 3306
+  database: trojan
+  username: root
+  password: 78L44W_Sg53JVmz8
+api:
+  enabled: false
+  api-addr: 127.0.0.1
+  api-port: 35651

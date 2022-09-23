@@ -1,0 +1,14 @@
+= {docname}
+Alderson <hahaleyile@126.com>
+v1.0, 2022-09-18
+:toc:
+:icons: font
+:toc-title: 目录
+
+Trojan-go 一键安装脚本。
+
+. 配置好域名解析
+
+. 从仓库中下载相应的文件到服务器上，用 root 权限执行
+
+. 配置客户端
