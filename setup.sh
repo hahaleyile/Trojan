@@ -58,7 +58,7 @@ else
 fi
 
 # 修改 sshd 配置文件
-sed -i -e "s/^.*Port .*$/Port 2244/g" \
+sed -i.bak -e "s/^.*Port .*$/Port 2244/g" \
   -e "s/^.*PermitRootLogin.*yes.*$/PermitRootLogin no/g" \
   -e "s/^.*PubkeyAuthentication.*$/PubkeyAuthentication yes/g" \
   -e "s/^.*AuthorizedKeysFile.*$/AuthorizedKeysFile .ssh\/authorized_keys/g" \
@@ -144,7 +144,7 @@ chown -R trojan:trojan /usr/local/etc/trojan-go
 # 修改 Trojan 配置文件
 echo "请输入 Trojan 密码："
 read -r trojan_password
-sed -i -e "s/<<password>>/$trojan_password/g" \
+sed -i.bak -e "s/<<password>>/$trojan_password/g" \
   -e "s/<<server_name>>/$server_name/g" \
   /usr/local/etc/trojan-go/config.yaml
 
