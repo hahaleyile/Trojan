@@ -2,6 +2,7 @@
 
 # 安装需要的文件：config.yaml, trojan-go.service, 400.html nginx.conf
 # 安装依赖库
+apt update -y
 apt install -y docker.io docker-compose nginx wget curl jq unzip qrencode
 
 # 创建用户和用户组
