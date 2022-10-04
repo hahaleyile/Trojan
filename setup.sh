@@ -3,13 +3,25 @@
 # 安装需要的文件：config.yaml, trojan-go.service, 400.html nginx.conf
 # 安装依赖库
 apt update -y
-apt install -y docker.io docker-compose nginx wget curl jq unzip qrencode sudo
+
+if ! apt install -y docker.io docker-compose nginx wget curl jq unzip qrencode sudo; then
+  echo "部分软件安装失败，请手动安装"
+  echo "如果是 docker 安装问题，请考虑使用以下命令进行安装："
+  echo "curl -fsSL https://get.docker.com | sh"
+  return 1
+fi
 
 # 创建用户和用户组
 if ! grep -q certusers /etc/group; then
   /usr/sbin/groupadd certusers
 else
   echo "用户组 certusers 已存在"
+fi
+
+if ! grep -q docker /etc/group; then
+  /usr/sbin/groupadd docker
+else
+  echo "用户组 docker 已存在"
 fi
 
 if ! grep -q trojan /etc/passwd; then
