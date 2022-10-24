@@ -71,7 +71,7 @@ else
 fi
 
 # 修改 sshd 配置文件
-sed -i.bak -e "s/^.*Port .*$/Port 2244/g" \
+sed -i.bak -e "s/^.*Port .*$/Port 22/g" \
   -e "s/^.*PermitRootLogin.*yes.*$/PermitRootLogin no/g" \
   -e "s/^.*PubkeyAuthentication.*$/PubkeyAuthentication yes/g" \
   -e "s/^.*AuthorizedKeysFile.*$/AuthorizedKeysFile .ssh\/authorized_keys/g" \
