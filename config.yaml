@@ -18,8 +18,8 @@ ssl:
   fallback-port: 10087
   fingerprint: "chrome"
   alpn:
-    - "h2"
     - "http/1.1"
+    - "h2"
 shadowsocks:
   enabled: false
   method: 'AES-256-GCM'
