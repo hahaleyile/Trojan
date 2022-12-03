@@ -16,6 +16,10 @@ ssl:
   sni: '<<server_name>>'
   fallback-addr: 127.0.0.1
   fallback-port: 10087
+  fingerprint: "chrome"
+  alpn:
+    - "http/1.1"
+    - "h2"
 shadowsocks:
   enabled: false
   method: 'AES-256-GCM'
