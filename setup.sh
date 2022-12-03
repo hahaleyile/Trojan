@@ -41,8 +41,6 @@ if [ -z "$server_ip" ] || [ -z "$domain_name" ] || [ -z "$ssh_pubkey" ] || [ -z 
   exit 0
 fi
 
-exit 1
-
 # 安装需要的文件：config.yaml, trojan-go.service, 400.html nginx.conf
 # 安装依赖库
 apt update -y
@@ -190,8 +188,6 @@ chown root:root /etc/systemd/system/trojan-go.service
 chown -R trojan:trojan /usr/local/etc/trojan-go
 
 # 修改 Trojan 配置文件
-echo "请输入 Trojan 密码："
-read -r trojan_password
 sed -i.bak -e "s/<<password>>/$trojan_password/g" \
   -e "s/<<server_name>>/$domain_name/g" \
   /usr/local/etc/trojan-go/config.yaml
