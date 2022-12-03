@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
-USAGE="Usage: $(basename $0) -e <email> -d <domain-name> -i <server-ip> -k <ssh-pubkey> -p <trojan-password>"
+USAGE="Usage: $(basename $0) -d <domain-name> -i <server-ip> -k <ssh-pubkey> -p <trojan-password>"
 
-args=$(getopt -o "e:d:i:k:p:h" -- "$@")
+args=$(getopt -o "d:i:k:p:h" -- "$@")
 eval set -- "$args"
 while [ $# -ge 1 ]; do
   case "$1" in
@@ -10,10 +10,6 @@ while [ $# -ge 1 ]; do
       # No more options left.
       shift
       break
-      ;;
-    -e)
-      email="$2"
-      shift
       ;;
     -d)
       domain_name="$2"
@@ -39,7 +35,7 @@ while [ $# -ge 1 ]; do
   shift
 done
 
-if [ -z "$server_ip" ] || [ -z "$domain_name" ] || [ -z "$ssh_pubkey" ] || [ -z "$trojan_password" ] || [ -z "$email" ]; then
+if [ -z "$server_ip" ] || [ -z "$domain_name" ] || [ -z "$ssh_pubkey" ] || [ -z "$trojan_password" ]; then
   echo "Error: Missing arguments"
   echo "$USAGE"
   exit 0
@@ -168,7 +164,7 @@ else
   curl https://get.acme.sh | sh
 fi
 LE_WORKING_DIR="/home/acme/.acme.sh"
-'/home/acme/.acme.sh/acme.sh' --register-account -m "$email"
+'/home/acme/.acme.sh/acme.sh' --set-default-ca --server letsencrypt
 '/home/acme/.acme.sh/acme.sh' --issue -d "$domain_name" -w /var/www/acme-challenge
 '/home/acme/.acme.sh/acme.sh' --install-cert -d "$domain_name" --key-file /etc/letsencrypt/live/private.key --fullchain-file /etc/letsencrypt/live/certificate.crt
 '/home/acme/.acme.sh/acme.sh' --upgrade  --auto-upgrade
