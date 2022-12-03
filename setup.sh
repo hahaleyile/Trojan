@@ -119,8 +119,6 @@ usermod -G certusers "$nginx_user"
 mkdir -p /var/www/acme-challenge
 chown -R acme:certusers /var/www/acme-challenge
 
-echo "请输入你的邮箱地址："
-read -r email
 sudo -i -u acme bash <<EOF
 if [ -e "/home/acme/.acme.sh" ]; then
   echo "acme.sh 已经安装"
@@ -129,7 +127,7 @@ else
   curl https://get.acme.sh | sh
 fi
 LE_WORKING_DIR="/home/acme/.acme.sh"
-'/home/acme/.acme.sh/acme.sh' --register-account -m "$email"
+'/home/acme/.acme.sh/acme.sh' --set-default-ca --server letsencrypt
 '/home/acme/.acme.sh/acme.sh' --issue -d "$server_name" -w /var/www/acme-challenge
 '/home/acme/.acme.sh/acme.sh' --install-cert -d "$server_name" --key-file /etc/letsencrypt/live/private.key --fullchain-file /etc/letsencrypt/live/certificate.crt
 '/home/acme/.acme.sh/acme.sh' --upgrade  --auto-upgrade
