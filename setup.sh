@@ -1,5 +1,46 @@
 #!/usr/bin/env sh
 
+USAGE="Usage: $(basename $0) -d <domain-name> -i <server-ip> -k <ssh-pubkey> -p <trojan-password>"
+
+args=$(getopt -o "d:i:k:p:h" -- "$@")
+eval set -- "$args"
+while [ $# -ge 1 ]; do
+  case "$1" in
+    --)
+      # No more options left.
+      shift
+      break
+      ;;
+    -d)
+      domain_name="$2"
+      shift
+      ;;
+    -i)
+      server_ip="$2"
+      shift
+      ;;
+    -k)
+      ssh_pubkey="$2"
+      shift
+      ;;
+    -p)
+      trojan_password="$2"
+      shift
+      ;;
+    -h)
+      echo "$USAGE"
+      exit 0
+      ;;
+  esac
+  shift
+done
+
+if [ -z "$server_ip" ] || [ -z "$domain_name" ] || [ -z "$ssh_pubkey" ] || [ -z "$trojan_password" ]; then
+  echo "Error: Missing arguments"
+  echo "$USAGE"
+  exit 0
+fi
+
 # 安装需要的文件：config.yaml, trojan-go.service, 400.html nginx.conf
 # 安装依赖库
 apt update -y
@@ -63,15 +104,13 @@ fi
 if [ -f /home/Alderson/.ssh/authorized_keys ]; then
   echo "SSH 公钥已存在"
 else
-  echo "请输入 SSH 公钥："
-  read -r public_key
   mkdir -p /home/Alderson/.ssh
-  echo "$public_key" >/home/Alderson/.ssh/authorized_keys
+  echo "$ssh_pubkey" >/home/Alderson/.ssh/authorized_keys
   chown -R Alderson:Alderson /home/Alderson/.ssh/
 fi
 
 # 修改 sshd 配置文件
-sed -i.bak -e "s/^.*Port .*$/Port 2244/g" \
+sed -i.bak -e "s/^.*Port .*$/Port 22/g" \
   -e "s/^.*PermitRootLogin.*yes.*$/PermitRootLogin no/g" \
   -e "s/^.*PubkeyAuthentication.*$/PubkeyAuthentication yes/g" \
   -e "s/^.*AuthorizedKeysFile.*$/AuthorizedKeysFile .ssh\/authorized_keys/g" \
@@ -92,14 +131,10 @@ else
 fi
 
 # 修改 nginx 配置
-echo "请输入本服务器域名："
-read -r server_name
-echo "请输入本服务器 IP："
-read -r server_ip
 if [ -f ./nginx.conf ]; then
   rm -f /etc/nginx/sites-available/default
   rm -f /etc/nginx/sites-enabled/default
-  sed -e "s/<<server_name>>/$server_name/g" \
+  sed -e "s/<<server_name>>/$domain_name/g" \
     -e "s/<<ip>>/$server_ip/g" \
     ./nginx.conf >/etc/nginx/sites-available/default
   ln /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
@@ -128,8 +163,8 @@ else
 fi
 LE_WORKING_DIR="/home/acme/.acme.sh"
 '/home/acme/.acme.sh/acme.sh' --set-default-ca --server letsencrypt
-'/home/acme/.acme.sh/acme.sh' --issue -d "$server_name" -w /var/www/acme-challenge
-'/home/acme/.acme.sh/acme.sh' --install-cert -d "$server_name" --key-file /etc/letsencrypt/live/private.key --fullchain-file /etc/letsencrypt/live/certificate.crt
+'/home/acme/.acme.sh/acme.sh' --issue -d "$domain_name" -w /var/www/acme-challenge
+'/home/acme/.acme.sh/acme.sh' --install-cert -d "$domain_name" --key-file /etc/letsencrypt/live/private.key --fullchain-file /etc/letsencrypt/live/certificate.crt
 '/home/acme/.acme.sh/acme.sh' --upgrade  --auto-upgrade
 chmod -R 750 /etc/letsencrypt/live
 EOF
@@ -153,10 +188,8 @@ chown root:root /etc/systemd/system/trojan-go.service
 chown -R trojan:trojan /usr/local/etc/trojan-go
 
 # 修改 Trojan 配置文件
-echo "请输入 Trojan 密码："
-read -r trojan_password
 sed -i.bak -e "s/<<password>>/$trojan_password/g" \
-  -e "s/<<server_name>>/$server_name/g" \
+  -e "s/<<server_name>>/$domain_name/g" \
   /usr/local/etc/trojan-go/config.yaml
 
 systemctl daemon-reload
@@ -185,7 +218,7 @@ fi
 echo "安装已经完成，你可以添加 Docker 容器来作为域名主页了"
 
 # 生成 Trojan 分享链接（二维码形式）
-qrencode -o - -t ANSI "trojan://$trojan_password@$server_name:443?sni=$server_name&allowinsecure=0"
+qrencode -o - -t ANSI "trojan://$trojan_password@$domain_name:443?sni=$domain_name&allowinsecure=0"
 
 # 拷贝 docker-compose.yml 给 Alderson
 cp ./docker-compose.yml /home/Alderson/docker-compose.yml
