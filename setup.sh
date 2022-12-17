@@ -1,36 +1,40 @@
 #!/usr/bin/env sh
 
-USAGE="Usage: $(basename $0) -d <domain-name> -i <server-ip> -k <ssh-pubkey> -p <trojan-password>"
+USAGE="Usage: $(basename $0) -d <domain-name> -i <server-ip> -k <ssh-pubkey> -p <trojan-password> -P <ssh-port>"
 
-args=$(getopt -o "d:i:k:p:h" -- "$@")
+args=$(getopt -o "d:i:k:p:P:h" -- "$@")
 eval set -- "$args"
 while [ $# -ge 1 ]; do
   case "$1" in
-    --)
-      # No more options left.
-      shift
-      break
-      ;;
-    -d)
-      domain_name="$2"
-      shift
-      ;;
-    -i)
-      server_ip="$2"
-      shift
-      ;;
-    -k)
-      ssh_pubkey="$2"
-      shift
-      ;;
-    -p)
-      trojan_password="$2"
-      shift
-      ;;
-    -h)
-      echo "$USAGE"
-      exit 0
-      ;;
+  --)
+    # No more options left.
+    shift
+    break
+    ;;
+  -d)
+    domain_name="$2"
+    shift
+    ;;
+  -i)
+    server_ip="$2"
+    shift
+    ;;
+  -k)
+    ssh_pubkey="$2"
+    shift
+    ;;
+  -p)
+    trojan_password="$2"
+    shift
+    ;;
+  -P)
+    ssh_port="$2"
+    shift
+    ;;
+  -h)
+    echo "$USAGE"
+    exit 0
+    ;;
   esac
   shift
 done
@@ -39,6 +43,10 @@ if [ -z "$server_ip" ] || [ -z "$domain_name" ] || [ -z "$ssh_pubkey" ] || [ -z 
   echo "Error: Missing arguments"
   echo "$USAGE"
   exit 0
+fi
+
+if [ -z "$ssh_port" ]; then
+  ssh_port="22"
 fi
 
 # 安装需要的文件：config.yaml, trojan-go.service, 400.html nginx.conf
@@ -110,7 +118,7 @@ else
 fi
 
 # 修改 sshd 配置文件
-sed -i.bak -e "s/^.*Port .*$/Port 22/g" \
+sed -i.bak -e "s/^.*Port .*$/Port $ssh_port/g" \
   -e "s/^.*PermitRootLogin.*yes.*$/PermitRootLogin no/g" \
   -e "s/^.*PubkeyAuthentication.*$/PubkeyAuthentication yes/g" \
   -e "s/^.*AuthorizedKeysFile.*$/AuthorizedKeysFile .ssh\/authorized_keys/g" \
