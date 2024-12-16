@@ -53,7 +53,7 @@ fi
 # 安装依赖库
 apt update -y
 
-if ! apt install -y docker.io docker-compose nginx wget curl jq unzip qrencode sudo; then
+if ! apt install -y docker.io docker-compose nginx wget curl jq unzip qrencode sudo cron; then
   echo "部分软件安装失败，请手动安装"
   echo "如果是 docker 安装问题，请考虑使用以下命令进行安装："
   echo "curl -fsSL https://get.docker.com | sh"
