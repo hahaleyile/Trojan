@@ -6,3 +6,6 @@ services:
     ports:
       - "8000:8000"
     restart: always
+    logging:
+      options:
+        max-size: 50m
